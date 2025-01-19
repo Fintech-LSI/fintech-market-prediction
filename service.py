@@ -4,7 +4,6 @@ import yfinance as yf
 import pandas as pd
 import time
 from datetime import date
-import matplotlib
 import matplotlib.pyplot as plt
 import io
 import numpy as np
@@ -16,18 +15,16 @@ import websocket
 import threading
 import json
 
-matplotlib.use('Agg')  # Set the matplotlib backend to 'agg'
-
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})  # Enable CORS for specific origin
 
 # ---------------- Stock Prediction App Variables ----------------
 scaler = MinMaxScaler(feature_range=(0, 1))
 base_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(base_dir, 'model', 'svm.pkl')  # now we use svm.pkl
+model_path = os.path.join(base_dir, 'model', 'model.pkl')
 
 with open(model_path, 'rb') as file:
-    model = pickle.load(file)  # Changed back to model.pkl
+    model = pickle.load(file)
 
 symbol = "META"  # Default stock symbol
 
@@ -134,33 +131,22 @@ def get_predictions_data():
     df = fetch_stock_data(stock_symbol, start_date, end_date)
     if df is None:
         return jsonify({"error": "Failed to retrieve stock data"}), 500
-    
-    # Create predictor variables
-    df['Open-Close'] = df.Open - df.Close
-    df['High-Low'] = df.High - df.Low
-
-    # Store all predictor variables in a variable X
-    X = df[['Open-Close', 'High-Low']]
-    
-    df['Predicted_Signal'] = model.predict(X) # Predict using loaded model
-    
-    # Calculate daily returns
-    df['Return'] = df.Close.pct_change()
-    # Calculate strategy returns
-    df['Strategy_Return'] = df.Return *df.Predicted_Signal.shift(1)
-    # Calculate Cumulutive returns
-    df['Cum_Ret'] = df['Return'].cumsum()
-    
-    # Calculate Cumulative strategy returns
-    df['Cum_Strategy'] = df['Strategy_Return'].cumsum()
-    
     data = df[['Date', 'Close']].copy()
-    
-    #Shift the 'Close' prices by 1 day to simulate the prediction and use the prediction to simulate a possible action, if the signal is one then use close and if 0 then use close from the day before
-    data['Predictions'] = (df['Close'].shift(1) * (df['Predicted_Signal'])) + (df['Close'].shift(1) * (1 - df['Predicted_Signal']))
-    data['Predictions'].fillna(data['Close'], inplace=True)
-    return jsonify(data[['Date', 'Close', 'Predictions']].to_dict(orient="records"))
-
+    dataset = data['Close'].values.reshape(-1, 1)
+    training_data_len = math.ceil(len(dataset) * 0.8)
+    scaled_data = scaler.fit_transform(dataset)
+    test_data = scaled_data[training_data_len - 60:, :]
+    x_test = []
+    for i in range(60, len(test_data)):
+        x_test.append(test_data[i - 60:i, 0])
+    x_test = np.array(x_test)
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+    predictions = model.predict(x_test)
+    predictions = scaler.inverse_transform(predictions)
+    train = data[:training_data_len]
+    valid = data[training_data_len:].copy()
+    valid['Predictions'] = predictions
+    return jsonify(valid[['Date', 'Close', 'Predictions']].to_dict(orient="records"))
 
 @app.route("/data", methods=["GET"])
 def get_data():
