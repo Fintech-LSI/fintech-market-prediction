@@ -5,10 +5,10 @@ metadata:
   namespace: fintech
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:4200"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://a37224dffcbd440f8a974f5aece171ef-dbc4f5e4bee80ee9.elb.us-east-1.amazonaws.com"
 spec:
   rules:
-    - host: market-prediction.your-domain.com
+    - host: "a9761a9b3f8034259b6153cee04be721-959097204.us-east-1.elb.amazonaws.com"
       http:
         paths:
           - path: /
