@@ -153,4 +153,4 @@ def get_data():
     return jsonify(data_responses[0] if data_responses else {})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=False)
