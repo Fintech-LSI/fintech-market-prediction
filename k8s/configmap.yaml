@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: market-prediction-config
-  namespace: fintech
-data:
-  MODEL_PATH: "/app/model/model.pkl"
-  LOG_LEVEL: "INFO"

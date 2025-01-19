@@ -3,10 +3,14 @@ kind: Service
 metadata:
   name: market-prediction
   namespace: fintech
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"    # Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-  - port: 80
-    targetPort: 5000
+    - port: 80
+      targetPort: 5000
+      protocol: TCP
   selector:
     app: market-prediction
