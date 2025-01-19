@@ -15,11 +15,11 @@ RUN apt-get update && \
 # Copy the requirements file into the container
 COPY requirements.txt .
 
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the current directory contents into the container at /app
-COPY . .
 
 # Make sure the model directory exists
 RUN mkdir -p /app/model
@@ -28,11 +28,25 @@ RUN mkdir -p /app/model
 COPY model/model.pkl /app/model/model.pkl
 COPY model/svm.pkl /app/model/svm.pkl
 
+# Copy the current directory contents into the container at /app
+COPY . .
+
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
 # Define environment variable
 ENV FLASK_APP=main.py
+ENV PYTHONUNBUFFERED=1
+ENV TF_ENABLE_ONEDNN_OPTS=0
 
-# Run gunicorn to serve the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+# Set the number of workers and timeout
+ENV WORKERS=1
+ENV TIMEOUT=120
+
+# Run gunicorn with specific configurations
+CMD ["gunicorn", \
+     "--bind", "0.0.0.0:5000", \
+     "--workers", "1", \
+     "--timeout", "120", \
+     "--log-level", "debug", \
+     "main:app"]
