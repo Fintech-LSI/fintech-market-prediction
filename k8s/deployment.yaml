@@ -28,15 +28,18 @@ spec:
           env:
             - name: FLASK_ENV
               value: "production"
+            - name: PYTHONUNBUFFERED
+              value: "1"
           livenessProbe:
             httpGet:
               path: /data
               port: 5000
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 60  # Increased delay
+            periodSeconds: 15
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /data
               port: 5000
-            initialDelaySeconds: 15
-            periodSeconds: 5
+            initialDelaySeconds: 30  # Increased delay
+            periodSeconds: 10
