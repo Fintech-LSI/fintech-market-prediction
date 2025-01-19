@@ -3,8 +3,9 @@
 ## Requirement
 
 * python version : `3.11` 
-* install dependencies : `pip install -r requirements.txt`
+* create virtual env : `python -m venv myenv`
 * environment : `myenv\Scripts\activate`
+* install dependencies : `pip install -r requirements.txt`
 * start application : `flask --app service.py run`
 
 ## Flask App
