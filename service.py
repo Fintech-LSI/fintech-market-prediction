@@ -66,8 +66,8 @@ def on_close(ws):
 
 def on_open(ws):
     ws.send('{"type":"subscribe","symbol":"BINANCE:BTCUSDT"}')
-    ws.send('{"type":"subscribe","symbol":"ADX"}')
-    ws.send('{"type":"subscribe","symbol":"DFM"}')
+    ws.send('{"type":"subscribe","symbol":"ETH-USD"}')
+    ws.send('{"type":"subscribe","symbol":"LTC-USD"}')
 
 def start_websocket():
     websocket.enableTrace(True)
