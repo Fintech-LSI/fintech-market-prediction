@@ -1,0 +1,27 @@
+ # Virtual Environment (myenv)
+ myenv/
+ myenv
+ */myenv/
+ */myenv
+
+ # Byte-compiled / optimized / DLL files
+ __pycache__/
+ *.pyc
+ *.pyo
+ *.pyd
+
+ # Distribution / packaging
+ .env
+ dist/
+ build/
+ *.egg
+ *.egg-info
+ *.whl
+
+ # IDE specific files
+ .idea/
+ .vscode/
+ *.log
+
+ # Mac Specific
+ .DS_Store
