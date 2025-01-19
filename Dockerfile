@@ -1,5 +1,5 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use Python 3.11 as the base image
+FROM python:3.11-slim
 
 # Set the working directory in the container
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY requirements.txt .
 # Upgrade pip
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install any needed packages specified in requirements.txt
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make sure the model directory exists
@@ -35,18 +35,9 @@ COPY . .
 EXPOSE 5000
 
 # Define environment variable
-ENV FLASK_APP=main.py
+ENV FLASK_APP=service.py
 ENV PYTHONUNBUFFERED=1
 ENV TF_ENABLE_ONEDNN_OPTS=0
 
-# Set the number of workers and timeout
-ENV WORKERS=1
-ENV TIMEOUT=120
-
-# Run gunicorn with specific configurations
-CMD ["gunicorn", \
-     "--bind", "0.0.0.0:5000", \
-     "--workers", "1", \
-     "--timeout", "120", \
-     "--log-level", "debug", \
-     "main:app"]
+# Run Flask directly as specified
+CMD ["flask", "--app", "service.py", "run", "--host=0.0.0.0"]
