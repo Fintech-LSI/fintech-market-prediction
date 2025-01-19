@@ -4,7 +4,10 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc python3-dev && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    libgomp1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install dependencies
